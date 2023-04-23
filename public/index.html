@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Networks</title>
+    <style>
+      #networkList {
+        list-style-type: none;
+        padding: 0;
+        margin-top:10px;
+      }
+      .networkItem {
+        margin-bottom: 10px;
+      }
+      .qualityBar {
+        width: 100%;
+        height: 20px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        border-radius: 10px;
+        background-color: lightgray;
+      }
+           body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        background-color: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .ssid {
+        font-size: 24px;
+        margin: 0 0 10px;
+      }
+
+      .quality {
+        height: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #e2e2e2;
+        display: flex;
+      }
+
+      .bar {
+        flex-grow: 1;
+      }
+
+      .poor {
+        background-color: #ff4444;
+      }
+
+      .fair {
+        background-color: #ffc107;
+      }
+
+      .good {
+        background-color: #00c851;
+      }
+
+      .excellent {
+        background-color: #007bff;
+      }
+
+      p {
+        margin: 0;
+        font-size: 16px;
+      }
+      /* network suggestion */
+      #networkSuggestion {
+        background-color: #00c851;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        text-align: center;
+      }
+      /* scanning button */
+          #scanButton {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+         }
+
+        #scanButton:hover {
+          background-color: #0056b3;
+        }
+         /* stop button */
+      #stopButton {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #stopButton:hover {
+        background-color: #c82333;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="networkSuggestion">
+      <button id="scanButton">Scan Networks</button>
+      <button id="stopButton" style="display:none">Stop</button>
+    </div>
+    
+    <ul id="networkList"></ul>
+    <script>
+      function fetchNetworks() {
+        fetch('/networks')
+          .then(response => response.json())
+          .then(networks => {
+            const networkList = document.querySelector('#networkList');
+            networkList.innerHTML = '';
+            networks
+              .sort((a, b) => b.quality - a.quality) // Sort networks by quality in descending order
+              .forEach(network => {
+                const listItem = document.createElement('li');
+                listItem.className = 'networkItem';
+
+                const qualityBar = document.createElement('div');
+                qualityBar.className = 'qualityBar';
+                qualityBar.style.width = `${network.quality}%`;
+                qualityBar.style.backgroundColor = getQualityColor(network.quality);
+                listItem.appendChild(qualityBar);
+
+                const networkInfo = document.createElement('div');
+                networkInfo.innerHTML = `<h2>${network.ssid}</h2><p>Quality: ${network.quality}%</p>`;
+                listItem.appendChild(networkInfo);
+
+                networkList.appendChild(listItem);
+              });
+
+            const bestNetwork = networks[0];
+            const networkSuggestion = document.querySelector('#networkSuggestion');
+            networkSuggestion.innerHTML = `Connect to ${bestNetwork.ssid} for best quality (${bestNetwork.quality}%)`;
+          })
+          .catch(error => console.error(error));
+      }
+
+      function getQualityColor(quality) {
+        if (quality >= 75) {
+          return 'green';
+        } else if (quality >= 50) {
+          return 'yellow';
+        } else if (quality >= 25) {
+          return 'orange';
+        } else {
+          return 'red';
+        }
+      }
+
+      let intervalId;
+
+
+      function startScanning() {
+  const scanButton = document.querySelector('#scanButton');
+  const stopButton = document.createElement('button');
+  stopButton.id = 'stopButton';
+  stopButton.textContent = 'Stop';
+  stopButton.style.backgroundColor = '#ff4444';
+  stopButton.style.color = 'white';
+  stopButton.style.border = 'none';
+  stopButton.style.padding = '10px 20px';
+  stopButton.style.fontSize = '16px';
+  stopButton.style.fontWeight = 'bold';
+  stopButton.style.borderRadius = '5px';
+  stopButton.style.cursor = 'pointer';
+  stopButton.addEventListener('click', stopScanning);
+
+  scanButton.replaceWith(stopButton);
+
+  intervalId = setInterval(fetchNetworks, 10000);
+}
+
+function stopScanning() {
+  const stopButton = document.querySelector('#stopButton');
+  const scanButton = document.createElement('button');
+  scanButton.id = 'scanButton';
+  scanButton.textContent = 'Scan Networks';
+  scanButton.style.backgroundColor = '#007bff';
+  scanButton.style.color = 'white';
+  scanButton.style.border = 'none';
+  scanButton.style.padding = '10px 20px';
+  scanButton.style.fontSize = '16px';
+  scanButton.style.fontWeight = 'bold';
+  scanButton.style.borderRadius = '5px';
+  scanButton.style.cursor = 'pointer';
+  scanButton.addEventListener('click', startScanning);
+
+  stopButton.replaceWith(scanButton);
+  clearInterval(intervalId);
+}
+
+
+
+      document.querySelector('#scanButton').addEventListener('click', startScanning);
+    </script>
+  </body>
+</html>

@@ -39,7 +39,7 @@ Sure, here's an example of how you can add a "Contributing" section to your READ
 We welcome contributions from the community! Here are some ways you can help:
 
 - Report bugs and suggest improvements by creating a [new issue](https://github.com/yourusername/yourproject/issues).
-- Contribute code by forking the repository and creating a pull request. Make sure to read our [contribution guidelines](CONTRIBUTING.md) first.
+- Contribute code by forking the repository and creating a pull request. Make sure to read our [contribution guidelines](contributing.md) first.
 - Spread the word! Tell your friends and colleagues about our project and encourage them to contribute.
 
 Thank you for your interest in contributing to our project!

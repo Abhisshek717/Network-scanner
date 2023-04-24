@@ -1,0 +1,55 @@
+/* fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Graduate&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+body{
+    padding:20px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+.container{
+    height:95vh;
+    width:100%;
+    background-color: white;
+    border:4px solid black;
+    border-radius: 10px;
+    padding:10px;
+}
+/* distance title */
+.display__distancetitle{
+    border:1px solid black;
+}
+.display__distancetitle > h1{
+    font-size: 50px;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+}
+.display__distancenumber{
+    border:1px solid black;
+    margin-top:5px;
+}
+.display__distancenumber > h1{
+    font-size: 200px;
+    text-align: center;
+    font-family: 'Graduate', cursive;
+    color:gray;
+}
+/* Time title */
+.display__Timetitle{
+    border:1px solid black;
+}
+.display__Timetitle > h1{
+    font-size: 40px;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+}
+.display__Timenumber{
+    border:1px solid black;
+    margin-top:5px;
+}
+.display__Timenumber > h1{
+    font-size: 150px;
+    text-align: center;
+    font-family: 'Graduate', cursive;
+    color:gray;
+}

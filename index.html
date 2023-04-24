@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Geolocation Watcher</title> 
+    <link rel="stylesheet" href="style.css">     
+    </head>
+    <body>
+      <!-- html -->
+      <div class="container">
+        <div class="display__distancetitle">
+          <h1>Distance</h1>
+        </div>
+        <div class="display__distancenumber">
+          <h1 id="distance">0m</h1>
+        </div>
+        <div class="display__Timetitle">
+          <h1>Time</h1>
+        </div>
+        <div class="display__Timenumber">
+          <h1 id="time">0s</h1>
+        </div>
+      </div>
+      <!-- java script -->
+      <script>
+        let distance = 0; // in meters
+        let time = 0; // in seconds
+        let lastPosition;
+        let lastTimestamp;
+  
+        navigator.geolocation.watchPosition((position) => {
+          const { latitude, longitude } = position.coords;
+  
+          if (lastPosition) {
+            const newDistance = haversineDistance(latitude, longitude, lastPosition.latitude, lastPosition.longitude);
+            distance += newDistance;
+            document.getElementById("distance").textContent = `${Math.round(distance)}m`;
+          }
+  
+          if (lastTimestamp) {
+            const newTime = (position.timestamp - lastTimestamp) / 1000;
+            time += newTime;
+            document.getElementById("time").textContent = formatTime(time);
+          }
+  
+          lastPosition = { latitude, longitude };
+          lastTimestamp = position.timestamp;
+        });
+  
+        function haversineDistance(lat1, lon1, lat2, lon2) {
+          const R = 6371e3; // Earth's radius in meters
+          const phi1 = toRadians(lat1);
+          const phi2 = toRadians(lat2);
+          const deltaPhi = toRadians(lat2 - lat1);
+          const deltaLambda = toRadians(lon2 - lon1);
+  
+          const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+            Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  
+          return R * c;
+        }
+  
+        function toRadians(degrees) {
+          return degrees * Math.PI / 180;
+        }
+  
+        function formatTime(seconds) {
+          if (seconds < 60) {
+            return `${Math.round(seconds)}s`;
+          } else if (seconds < 3600) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.round(seconds % 60);
+            return `${minutes}m ${remainingSeconds}s`;
+          } else {
+            const hours = Math.floor(seconds / 3600);
+            const remainingMinutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = Math.round(seconds % 60);
+            return `${hours}h ${remainingMinutes}m ${remainingSeconds}s`;
+          }
+        }
+      </script>
+      
+    </body>
+</html>
